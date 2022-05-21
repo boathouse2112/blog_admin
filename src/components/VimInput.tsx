@@ -1,45 +1,17 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 import React, { useEffect, useState } from 'react';
-import { BaseEditor, createEditor, Descendant } from 'slate';
-import { HistoryEditor, withHistory } from 'slate-history';
+import { createEditor, Descendant } from 'slate';
+import { withHistory } from 'slate-history';
 import {
   DefaultElement,
   Editable,
-  ReactEditor,
   RenderElementProps,
   RenderLeafProps,
   Slate,
   withReact,
 } from 'slate-react';
-import { VimEditor } from './vim-editor';
+import { handleKeyDown } from './key-handlers';
 import { withVim } from './with-vim';
-
-type DefaultElement = {
-  type: 'line';
-  children: CustomText[];
-};
-
-type CodeElement = {
-  type: 'code';
-  children: CustomText[];
-};
-
-type FormattedText = {
-  text: string;
-  bold?: true;
-};
-
-type CustomEditor = BaseEditor & ReactEditor & HistoryEditor & VimEditor;
-type CustomElement = DefaultElement | CodeElement;
-type CustomText = FormattedText;
-
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: CustomEditor;
-    Element: CustomElement;
-    Text: CustomText;
-  }
-}
 
 const initialValue: Descendant[] = [
   {
@@ -77,45 +49,6 @@ const Leaf = (props: RenderLeafProps) => {
       {props.children}
     </span>
   );
-};
-
-const handleKeyDown = (
-  event: React.KeyboardEvent<HTMLDivElement>,
-  editor: CustomEditor
-) => {
-  const handleVanillaKeys = () => {
-    switch (event.key) {
-      case 'h':
-        event.preventDefault();
-        editor.moveLeft();
-        break;
-
-      case 'j':
-        event.preventDefault();
-        editor.moveDown();
-        break;
-
-      case 'k':
-        event.preventDefault();
-        editor.moveUp();
-        break;
-
-      case 'l':
-        event.preventDefault();
-        editor.moveRight();
-        break;
-    }
-  };
-
-  const handleControlKeys = () => {};
-
-  if (event.ctrlKey) {
-    handleControlKeys();
-  } else if (
-    !(event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
-  ) {
-    handleVanillaKeys();
-  }
 };
 
 const VimInput = () => {

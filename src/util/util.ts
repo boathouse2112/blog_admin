@@ -50,7 +50,14 @@ const pointAtLineOffset = <T extends Editor>(
     }
   }
 
-  throw new Error('Offset higher than length of line.');
+  // If the target line is too short, return the last point in that line.
+  assert(line.children.length > 0);
+  const lastTextNodeIdx = line.children.length - 1;
+  const lastTextNodeLength = Node.string(line.children[lastTextNodeIdx]).length;
+  return {
+    path: [lineIdx, lastTextNodeIdx],
+    offset: lastTextNodeLength,
+  };
 };
 
 export { offsetInLine, pointAtLineOffset };

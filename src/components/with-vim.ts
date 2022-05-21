@@ -1,9 +1,12 @@
 import { Editor, Transforms } from 'slate';
 import { offsetInLine, pointAtLineOffset } from '../util/util';
+import { LineElement } from './types';
 import { VimEditor } from './vim-editor';
 
 const withVim = <T extends Editor>(editor: T): T & VimEditor => {
   const e = editor as T & VimEditor;
+
+  e.mode = 'normal';
 
   e.lineCount = () => e.children.length;
 
@@ -42,6 +45,39 @@ const withVim = <T extends Editor>(editor: T): T & VimEditor => {
       const pointAbove = pointAtLineOffset(e, belowLineIdx, lineOffset);
 
       Transforms.select(e, pointAbove);
+    }
+  };
+
+  e.moveForwardWord = () => {
+    Transforms.move(e, { unit: 'word' });
+    Transforms.move(editor, { distance: 1 });
+  };
+
+  e.moveBackwardWord = () => {
+    Transforms.move(e, { unit: 'word', reverse: true });
+  };
+
+  e.moveEndWord = () => {
+    Transforms.move(e, { unit: 'word' });
+  };
+
+  e.newLineAbove = () => {
+    const currentPoint = e.selection?.anchor;
+    if (currentPoint !== undefined) {
+      const { path } = currentPoint;
+      const lineBelowLocation = [path[0]];
+      const lineNode: LineElement = { type: 'line', children: [{ text: '' }] };
+      Transforms.insertNodes(e, lineNode, { at: lineBelowLocation });
+    }
+  };
+
+  e.newLineBelow = () => {
+    const currentPoint = e.selection?.anchor;
+    if (currentPoint !== undefined) {
+      const { path } = currentPoint;
+      const lineBelowLocation = [path[0] + 1];
+      const lineNode: LineElement = { type: 'line', children: [{ text: '' }] };
+      Transforms.insertNodes(e, lineNode, { at: lineBelowLocation });
     }
   };
 
