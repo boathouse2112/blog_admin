@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
-import React, { useEffect, useState } from 'react';
-import { createEditor, Descendant } from 'slate';
+import Prism, { Token } from 'prismjs';
+import 'prismjs/components/prism-markdown';
+import React, { useMemo } from 'react';
+import { createEditor, Descendant, Node, NodeEntry, Text } from 'slate';
 import { withHistory } from 'slate-history';
 import {
   DefaultElement,
@@ -11,7 +13,30 @@ import {
   withReact,
 } from 'slate-react';
 import { handleKeyDown } from './key-handlers';
+import Leaf from './Leaf';
 import { withVim } from './with-vim';
+
+/**
+ * Add up lengths of all the strings in the given token.
+ */
+const getLength = (token: string | Token): number => {
+  if (typeof token === 'string') {
+    return token.length;
+  }
+
+  const content = token.content;
+  // Prism.TokenStream = string | Token | Array<string | Token>
+  if (typeof token.content === 'string') {
+    return token.content.length;
+  } else if ((content as Token).type !== undefined) {
+    return getLength(content as Token);
+  } else {
+    return (content as Array<string | Token>).reduce(
+      (length: number, token: string | Token) => length + getLength(token),
+      0
+    );
+  }
+};
 
 const initialValue: Descendant[] = [
   {
@@ -32,51 +57,57 @@ const initialValue: Descendant[] = [
   },
 ];
 
-const CodeElement = (props: RenderElementProps) => {
-  return (
-    <pre {...props.attributes}>
-      <code>{props.children}</code>
-    </pre>
-  );
-};
-
-const Leaf = (props: RenderLeafProps) => {
-  return (
-    <span
-      {...props.attributes}
-      style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal' }}
-    >
-      {props.children}
-    </span>
-  );
-};
-
 const VimInput = () => {
-  const [editor] = useState(() =>
-    withVim(withHistory(withReact(createEditor())))
+  const editor = useMemo(
+    () => withVim(withHistory(withReact(createEditor()))),
+    []
   );
 
-  const renderElement = (props: RenderElementProps) => {
-    switch (props.element.type) {
-      case 'code':
-        return <CodeElement {...props} />;
-      default:
-        return <DefaultElement {...props} />;
+  const decorate = ([
+    node,
+    path,
+  ]: NodeEntry<Node>): /*(node: Node, path: Path)*/ any[] => {
+    const ranges: any[] = [];
+    if (!Text.isText(node)) {
+      return ranges;
     }
+    const tokens = Prism.tokenize(node.text, Prism.languages['markdown']);
+    let start = 0;
+
+    for (const token of tokens) {
+      const length = getLength(token);
+      const end = start + length;
+
+      if (typeof token !== 'string') {
+        ranges.push({
+          [token.type]: true,
+          anchor: { path, offset: start },
+          focus: { path, offset: end },
+        });
+      }
+
+      start = end;
+    }
+
+    return ranges;
   };
 
-  const renderLeaf = (props: RenderLeafProps) => {
-    return <Leaf {...props} />;
-  };
+  const renderElement = (props: RenderElementProps) => (
+    <DefaultElement {...props} />
+  );
 
+  const renderLeaf = (props: RenderLeafProps) => <Leaf {...props} />;
+
+  /*
   useEffect(() => {
     setInterval(() => console.log(editor.selection), 1000);
   });
+  */
 
   return (
     <Slate editor={editor} value={initialValue}>
       <Editable
-        renderElement={renderElement}
+        decorate={decorate}
         renderLeaf={renderLeaf}
         onKeyDown={(event) => handleKeyDown(event, editor)}
       />

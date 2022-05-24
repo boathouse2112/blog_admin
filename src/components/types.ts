@@ -8,19 +8,13 @@ type LineElement = {
   children: CustomText[];
 };
 
-type CodeElement = {
-  type: 'code';
-  children: CustomText[];
-};
-
-type FormattedText = {
+type Text = {
   text: string;
-  bold?: true;
 };
 
 type CustomEditor = BaseEditor & ReactEditor & HistoryEditor & VimEditor;
-type CustomElement = LineElement | CodeElement;
-type CustomText = FormattedText;
+type CustomElement = LineElement;
+type CustomText = Text;
 
 declare module 'slate' {
   interface CustomTypes {
@@ -30,11 +24,4 @@ declare module 'slate' {
   }
 }
 
-export type {
-  LineElement,
-  CodeElement,
-  FormattedText,
-  CustomEditor,
-  CustomElement,
-  CustomText,
-};
+export type { LineElement, CustomEditor, CustomElement, CustomText };
