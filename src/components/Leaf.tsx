@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
 import { RenderLeafProps } from 'slate-react';
 
 const Leaf = (props: RenderLeafProps) => {
@@ -9,11 +7,11 @@ const Leaf = (props: RenderLeafProps) => {
   return (
     <span
       {...attributes}
-      css={css`
-        font-family: monospace;
-        background-color: white;
-        color: black;
-      `}
+      style={{
+        backgroundColor: 'white',
+        color: 'black',
+        ...(leaf.title && { color: '#389edb' }),
+      }}
     >
       {children}
     </span>

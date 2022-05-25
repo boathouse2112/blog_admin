@@ -5,7 +5,6 @@ import React, { useMemo } from 'react';
 import { createEditor, Descendant, Node, NodeEntry, Text } from 'slate';
 import { withHistory } from 'slate-history';
 import {
-  DefaultElement,
   Editable,
   RenderElementProps,
   RenderLeafProps,
@@ -14,6 +13,7 @@ import {
 } from 'slate-react';
 import { handleKeyDown } from './key-handlers';
 import Leaf from './Leaf';
+import Line from './Line';
 import { withVim } from './with-vim';
 
 /**
@@ -63,10 +63,7 @@ const VimInput = () => {
     []
   );
 
-  const decorate = ([
-    node,
-    path,
-  ]: NodeEntry<Node>): /*(node: Node, path: Path)*/ any[] => {
+  const decorate = ([node, path]: NodeEntry<Node>): any[] => {
     const ranges: any[] = [];
     if (!Text.isText(node)) {
       return ranges;
@@ -92,9 +89,7 @@ const VimInput = () => {
     return ranges;
   };
 
-  const renderElement = (props: RenderElementProps) => (
-    <DefaultElement {...props} />
-  );
+  const renderElement = (props: RenderElementProps) => <Line {...props} />;
 
   const renderLeaf = (props: RenderLeafProps) => <Leaf {...props} />;
 
@@ -105,13 +100,16 @@ const VimInput = () => {
   */
 
   return (
-    <Slate editor={editor} value={initialValue}>
-      <Editable
-        decorate={decorate}
-        renderLeaf={renderLeaf}
-        onKeyDown={(event) => handleKeyDown(event, editor)}
-      />
-    </Slate>
+    <div className="mx-20 my-10 font-mono text-base leading-snug">
+      <Slate editor={editor} value={initialValue}>
+        <Editable
+          decorate={decorate}
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          onKeyDown={(event) => handleKeyDown(event, editor)}
+        />
+      </Slate>
+    </div>
   );
 };
 
