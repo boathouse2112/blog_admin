@@ -1,5 +1,6 @@
 import React from 'react';
 import { ReactEditor, RenderElementProps, useSlate } from 'slate-react';
+import styles from './line.module.css';
 
 const Line = (props: RenderElementProps) => {
   const { attributes, element, children } = props;
@@ -11,7 +12,13 @@ const Line = (props: RenderElementProps) => {
 
   return (
     <div {...attributes}>
-      {<span contentEditable={false}>{lineNumber()} </span>}
+      {
+        <div
+          contentEditable={false}
+          className={`inline-block ${styles['line-number']}`}
+          data-content={lineNumber() + ' '}
+        ></div>
+      }
       {children}
     </div>
   );

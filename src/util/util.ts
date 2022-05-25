@@ -2,6 +2,15 @@ import assert from 'assert';
 import { BasePoint, Editor, Element, Node, Point, Text } from 'slate';
 
 /**
+ * Determine whether two Points are equal
+ */
+const pointsEqual = (a: BasePoint, b: BasePoint): boolean => {
+  const pathsEqual = a.path.every((elem, idx) => elem === b.path[idx]);
+  const offsetsEqual = a.offset === b.offset;
+  return pathsEqual && offsetsEqual;
+};
+
+/**
  *
  * Gets the offset of a point, starting from the beginning of the line.
  *
@@ -28,7 +37,6 @@ const offsetInLine = <T extends Editor>(editor: T, point: Point) => {
 /**
  *
  * Gets the point at a line offset.
- * Throws an error if @param lineOffset is larger than the line length.
  *
  */
 const pointAtLineOffset = <T extends Editor>(
@@ -60,4 +68,4 @@ const pointAtLineOffset = <T extends Editor>(
   };
 };
 
-export { offsetInLine, pointAtLineOffset };
+export { pointsEqual, offsetInLine, pointAtLineOffset };

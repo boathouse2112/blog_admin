@@ -2,7 +2,15 @@
 import Prism, { Token } from 'prismjs';
 import 'prismjs/components/prism-markdown';
 import React, { useMemo } from 'react';
-import { createEditor, Descendant, Node, NodeEntry, Text } from 'slate';
+import {
+  BasePoint,
+  BaseSelection,
+  createEditor,
+  Descendant,
+  Node,
+  NodeEntry,
+  Text,
+} from 'slate';
 import { withHistory } from 'slate-history';
 import {
   Editable,
@@ -11,6 +19,7 @@ import {
   Slate,
   withReact,
 } from 'slate-react';
+import { pointsEqual } from '../util/util';
 import { handleKeyDown } from './key-handlers';
 import Leaf from './Leaf';
 import Line from './Line';
@@ -65,6 +74,8 @@ const VimInput = () => {
 
   const decorate = ([node, path]: NodeEntry<Node>): any[] => {
     const ranges: any[] = [];
+
+    // Syntax highlighting
     if (!Text.isText(node)) {
       return ranges;
     }
@@ -86,6 +97,22 @@ const VimInput = () => {
       start = end;
     }
 
+    const isSingleSelection = (selection: BaseSelection) => {
+      const anchor = editor.selection?.anchor;
+      const focus = editor.selection?.focus;
+      return anchor && focus && pointsEqual(anchor, focus);
+    };
+
+    // Normal mode cursor
+    if (editor.mode === 'normal' && isSingleSelection(editor.selection)) {
+      const anchor = editor.selection?.anchor as BasePoint;
+      ranges.push({
+        cursor: true,
+        anchor: anchor,
+        focus: { ...anchor, offset: anchor.offset + 1 },
+      });
+    }
+
     return ranges;
   };
 
@@ -100,7 +127,7 @@ const VimInput = () => {
   */
 
   return (
-    <div className="mx-20 my-10 font-mono text-base leading-snug">
+    <div className="mx-20 my-10 font-mono text-base leading-snug caret-transparent">
       <Slate editor={editor} value={initialValue}>
         <Editable
           decorate={decorate}

@@ -1,0 +1,23 @@
+
+.normal-mode-cursor {
+  background-color: rgb(236, 215, 215);
+  color: white;
+
+  animation: cursor-animation 1s linear infinite;
+  animation-timing-function: steps(2, jump-none);
+}
+
+@keyframes cursor-animation {
+  0% {
+    background-color: black;
+    color: white;
+  }
+  100% {
+    background-color: white;
+    color: black;
+  }
+}
+
+.title {
+  color: '#389edb';
+}

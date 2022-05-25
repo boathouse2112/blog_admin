@@ -1,0 +1,3 @@
+.line-number::before {
+  content: attr(data-content);
+}
