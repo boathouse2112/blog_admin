@@ -14,4 +14,6 @@ export interface VimEditor extends BaseEditor {
   moveEndWord: () => void;
   newLineAbove: () => void;
   newLineBelow: () => void;
+  insertMode: () => void;
+  normalMode: () => void;
 }

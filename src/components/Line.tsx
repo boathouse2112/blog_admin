@@ -11,7 +11,10 @@ const Line = (props: RenderElementProps) => {
   };
 
   return (
-    <div {...attributes}>
+    <div
+      {...attributes}
+      style={{ ...(editor.mode === 'normal' && { caretColor: 'transparent' }) }}
+    >
       {
         <div
           contentEditable={false}

@@ -8,6 +8,26 @@ const handleNormalMode = (
 ) => {
   const handleVanillaKeys = () => {
     switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        editor.moveLeft(); // Override movement to avoid wrapping around
+        break;
+
+      case 'ArrowDown':
+        event.preventDefault();
+        editor.moveDown();
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        editor.moveUp();
+        break;
+
+      case 'ArrowRight':
+        event.preventDefault();
+        editor.moveRight();
+        break;
+
       case 'h':
         event.preventDefault();
         editor.moveLeft();
@@ -30,13 +50,13 @@ const handleNormalMode = (
 
       case 'i':
         event.preventDefault();
-        editor.mode = 'insert';
+        editor.insertMode();
         break;
 
       case 'a':
         event.preventDefault();
         editor.moveRight();
-        editor.mode = 'insert';
+        editor.insertMode();
         break;
 
       case 'w':
@@ -83,9 +103,31 @@ const handleInsertMode = (
   event: React.KeyboardEvent<HTMLDivElement>,
   editor: Editor & VimEditor
 ) => {
-  if (event.key === 'Escape') {
-    event.preventDefault();
-    editor.mode = 'normal';
+  switch (event.key) {
+    case 'Escape':
+      event.preventDefault();
+      editor.normalMode();
+      return;
+
+    case 'ArrowLeft':
+      event.preventDefault();
+      editor.moveLeft(); // Override movement to avoid wrapping around
+      break;
+
+    case 'ArrowDown':
+      event.preventDefault();
+      editor.moveDown();
+      break;
+
+    case 'ArrowUp':
+      event.preventDefault();
+      editor.moveUp();
+      break;
+
+    case 'ArrowRight':
+      event.preventDefault();
+      editor.moveRight();
+      break;
   }
 };
 

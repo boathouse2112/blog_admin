@@ -1,8 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createEditor, Descendant } from 'slate';
-import { offsetInLine, pointAtLineOffset } from './util';
+import { lineLength, offsetInLine, pointAtLineOffset } from './util';
 
 const textNode = (text: string) => ({ text });
+
+describe('lineLength', () => {
+  it('sums the length of all text nodes', () => {
+    // arrange
+    const initialValue: Descendant[] = [
+      {
+        type: 'line',
+        children: [
+          textNode('plain'),
+          textNode('text'),
+          textNode('this is the target node.'),
+        ],
+      },
+    ];
+    const lineIdx = 0;
+
+    const editor = createEditor();
+    editor.children = initialValue;
+
+    // act
+    const length = lineLength(editor, lineIdx);
+
+    // assert
+    expect(length).toBe(33);
+  });
+});
 
 describe('offsetInLine', () => {
   it("gives the original offset if there's only 1 text node", () => {
@@ -33,7 +59,6 @@ describe('offsetInLine', () => {
 
   it('Adds the length of previous nodes if they exist', () => {
     // arrange
-
     const initialValue: Descendant[] = [
       {
         type: 'line',

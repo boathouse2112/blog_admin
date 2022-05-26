@@ -73,6 +73,10 @@ const VimInput = () => {
   );
 
   const decorate = ([node, path]: NodeEntry<Node>): any[] => {
+    // console.log('decorating');
+    // console.log('node: ', node);
+    // console.log('path', path);
+
     const ranges: any[] = [];
 
     // Syntax highlighting
@@ -104,7 +108,16 @@ const VimInput = () => {
     };
 
     // Normal mode cursor
-    if (editor.mode === 'normal' && isSingleSelection(editor.selection)) {
+
+    const isSelectionLine = path[0] === editor?.selection?.anchor.path[0];
+    if (
+      editor.mode === 'normal' &&
+      isSingleSelection(editor.selection) &&
+      isSelectionLine
+    ) {
+      console.log('Decorating selection.');
+      console.log('node: ', node);
+      console.log('path: ', path);
       const anchor = editor.selection?.anchor as BasePoint;
       ranges.push({
         cursor: true,
@@ -127,7 +140,7 @@ const VimInput = () => {
   */
 
   return (
-    <div className="mx-20 my-10 font-mono text-base leading-snug caret-transparent">
+    <div className="mx-20 my-10 font-mono text-base leading-snug">
       <Slate editor={editor} value={initialValue}>
         <Editable
           decorate={decorate}

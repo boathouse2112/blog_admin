@@ -1,6 +1,12 @@
 import assert from 'assert';
 import { BasePoint, Editor, Element, Node, Point, Text } from 'slate';
 
+const arraysEqual = <T>(a: Array<T>, b: Array<T>) =>
+  Array.isArray(a) &&
+  Array.isArray(b) &&
+  a.length === b.length &&
+  a.every((val, index) => val === b[index]);
+
 /**
  * Determine whether two Points are equal
  */
@@ -11,9 +17,23 @@ const pointsEqual = (a: BasePoint, b: BasePoint): boolean => {
 };
 
 /**
- *
+ * Length of the line at the given index
+ */
+const lineLength = <T extends Editor>(editor: T, lineIdx: number) => {
+  if (lineIdx >= editor.children.length) {
+    throw new Error('Given index is larger than the number of lines');
+  }
+  const line = editor.children[lineIdx];
+
+  assert(Element.isElement(line));
+  return line.children.reduce(
+    (length, textNode) => length + textNode.text.length,
+    0
+  );
+};
+
+/**
  * Gets the offset of a point, starting from the beginning of the line.
- *
  */
 const offsetInLine = <T extends Editor>(editor: T, point: Point) => {
   const { path, offset } = point;
@@ -35,9 +55,7 @@ const offsetInLine = <T extends Editor>(editor: T, point: Point) => {
 };
 
 /**
- *
  * Gets the point at a line offset.
- *
  */
 const pointAtLineOffset = <T extends Editor>(
   editor: T,
@@ -68,4 +86,10 @@ const pointAtLineOffset = <T extends Editor>(
   };
 };
 
-export { pointsEqual, offsetInLine, pointAtLineOffset };
+export {
+  arraysEqual,
+  pointsEqual,
+  lineLength,
+  offsetInLine,
+  pointAtLineOffset,
+};
