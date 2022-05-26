@@ -55,8 +55,8 @@ const handleNormalMode = (
 
       case 'a':
         event.preventDefault();
-        editor.moveRight();
         editor.insertMode();
+        editor.moveRight();
         break;
 
       case 'w':
@@ -86,6 +86,16 @@ const handleNormalMode = (
         editor.newLineAbove();
         editor.moveUp();
         editor.mode = 'insert';
+        break;
+
+      case '0':
+        event.preventDefault();
+        editor.moveLineStart();
+        break;
+
+      case '$':
+        event.preventDefault();
+        editor.moveLineEnd();
         break;
     }
   };

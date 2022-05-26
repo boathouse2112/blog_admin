@@ -79,6 +79,33 @@ const withVim = <T extends Editor>(editor: T): T & VimEditor => {
     Transforms.move(e, { unit: 'word' });
   };
 
+  e.moveLineStart = () => {
+    const anchorLineIdx = e.selection?.anchor.path[0];
+    if (anchorLineIdx === undefined) {
+      throw new Error('Anchor undefined.');
+    }
+    const lineStartPoint = pointAtLineOffset(e, anchorLineIdx, 0);
+
+    Transforms.setSelection(e, {
+      anchor: lineStartPoint,
+      focus: lineStartPoint,
+    });
+  };
+
+  e.moveLineEnd = () => {
+    const anchorLineIdx = e.selection?.anchor.path[0];
+    if (anchorLineIdx === undefined) {
+      throw new Error('Anchor undefined.');
+    }
+    const lineEndOffset = lineLength(e, anchorLineIdx);
+    const lineEndPoint = pointAtLineOffset(e, anchorLineIdx, lineEndOffset);
+
+    Transforms.setSelection(e, {
+      anchor: lineEndPoint,
+      focus: lineEndPoint,
+    });
+  };
+
   e.newLineAbove = () => {
     const currentPoint = e.selection?.anchor;
     if (currentPoint !== undefined) {

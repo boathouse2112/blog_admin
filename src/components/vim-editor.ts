@@ -4,6 +4,7 @@ type VimMode = 'normal' | 'insert';
 
 export interface VimEditor extends BaseEditor {
   mode: VimMode;
+  redecorateTrigger: number;
   lineCount: () => number;
   moveLeft: () => void;
   moveRight: () => void;
@@ -12,6 +13,8 @@ export interface VimEditor extends BaseEditor {
   moveForwardWord: () => void;
   moveBackwardWord: () => void;
   moveEndWord: () => void;
+  moveLineStart: () => void;
+  moveLineEnd: () => void;
   newLineAbove: () => void;
   newLineBelow: () => void;
   insertMode: () => void;
